@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Password manager</string>
+    <string name="all_site">All Site</string>
+    <string name="add_site">Add Site</string>
+    <string name="content_desc_toggle_password_visibility">Password visibility</string>
+    <string name="detail_screen_toolbar_title">Spass</string>
+    <string name="back">Back</string>
+    <string name="pin">PIN</string>
+    <string name="pin_biometric_prompt_title">Login</string>
+    <string name="pin_biometric_prompt_description">Log in using your biometric credential</string>
+    <string name="pin_biometric_error">Error</string>
+    <string name="pin_biometric_authentication_error">Error</string>
+
+
+    <string name="android1">Android1</string>
+    <string name="android2">Android2</string>
+    <string name="android3">Android3</string>
+    <string name="android4">Android4</string>
+    <string name="dsds4ds">DSDS4DS</string>
+    <string name="dsdsd3s">DSDSD3S</string>
+    <string name="dsdsd1s">DSDSD1S</string>
+    <string name="dsdsd2s">DSDSD2S</string>
+    <string name="asd123">asd123</string>
+    <string name="nick">Nick</string>
+    <string name="joe">Joe</string>
+    <string name="wanya">Wanya</string>
+    <string name="sirgey">Sirgey</string>
+    <string name="lockscreen">LockScreen</string>
+
+
+</resources>
