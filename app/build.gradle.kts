@@ -51,6 +51,9 @@ android {
 
 dependencies {
 
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")

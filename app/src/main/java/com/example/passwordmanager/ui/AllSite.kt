@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,17 +42,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.passwordmanager.R
+import com.example.passwordmanager.data.Datasource.sites
+import com.example.passwordmanager.data.PreferencesManager
 import com.example.passwordmanager.data.Website
 import com.example.passwordmanager.ui.theme.PasswordManagerTheme
 import kotlinx.coroutines.delay
-
 
 @Composable
 fun AddButton(
@@ -74,7 +76,9 @@ fun AddButton(
 
 @Composable
 fun SiteApp(viewModel: PassViewModel = viewModel()) {
-    val sites by viewModel.sites.collectAsState()
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager(context)
+    sites = preferencesManager.loadSites().toMutableList()
 
     LazyColumn(
         state = rememberLazyListState(),
@@ -85,7 +89,11 @@ fun SiteApp(viewModel: PassViewModel = viewModel()) {
         items(sites) { site ->
             SwipeToDeleteContainer(
                 site = site,
-                onDelete = { viewModel.removeSite(site) }
+                onDelete = {
+                    viewModel.removeSite(site, context)
+                    viewModel.deletePasswordFile(context, site.id)
+                    preferencesManager.saveSites(sites)
+                }
             )
         }
     }
@@ -168,7 +176,13 @@ fun SwipeToDeleteContainer(
 fun SiteItem(
     site: Website,
     modifier: Modifier = Modifier,
+    viewModel: PassViewModel = viewModel()
 ) {
+    val filesDir = LocalContext.current.filesDir
+    val decryptedPassword = remember(site) {
+        viewModel.decrypt(filesDir, site.id)
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -184,15 +198,7 @@ fun SiteItem(
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_small))
         ) {
-            Image(
-                painter = painterResource(site.icon),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .size(dimensionResource(R.dimen.image_size))
-                    .clip(MaterialTheme.shapes.small)
-            )
+            SiteIcon(site)
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.padding()) {
                 Text(
@@ -203,10 +209,30 @@ fun SiteItem(
                     )
                 )
                 Text(text = "Person: ${site.personName}")
-                Text(text = "Password: ${site.password}")
+                Text(text = "Password: $decryptedPassword")
             }
         }
     }
+}
+
+@Composable
+fun SiteIcon(website: Website) {
+    Image(
+        painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current).data(data = website.url)
+                .apply(block = fun ImageRequest.Builder.() {
+                    crossfade(true)
+                    placeholder(R.drawable.placeholder_icon)
+                    error(R.drawable.error_icon)
+                }).build()
+        ),
+        contentDescription = "Иконка сайта ${website.siteName}",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.padding_small))
+            .size(dimensionResource(R.dimen.image_size))
+            .clip(MaterialTheme.shapes.small)
+    )
 }
 
 @Preview(showBackground = true)

@@ -6,20 +6,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.passwordmanager.R
+import com.example.passwordmanager.data.Datasource.sites
+import com.example.passwordmanager.data.PreferencesManager
+import com.example.passwordmanager.ui.PassViewModel.Companion.getLastSiteId
+import com.example.passwordmanager.ui.PassViewModel.Companion.incrementLastSiteId
 import com.example.passwordmanager.ui.theme.PasswordManagerTheme
 
 @Composable
@@ -27,12 +34,17 @@ fun AddSiteScreen(
     viewModel: PassViewModel = viewModel(),
     onCancelButtonClicked: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager(context)
     val focusManager = LocalFocusManager.current
+    val filesDir = LocalContext.current.filesDir
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.padding_medium))
+            .verticalScroll(scrollState)
     ) {
         OutlinedTextField(
             value = viewModel.siteName,
@@ -112,7 +124,12 @@ fun AddSiteScreen(
                     viewModel.personName.isNotBlank() &&
                     viewModel.password.isNotBlank()
                 ) {
-                    viewModel.addSite()
+                    incrementLastSiteId()
+                    val newSiteId = getLastSiteId()
+                    viewModel.encrypt(filesDir, newSiteId)
+                    viewModel.addSite(newSiteId)
+
+                    preferencesManager.saveSites(sites)
                     onCancelButtonClicked()
                 } else {
                     onCancelButtonClicked()

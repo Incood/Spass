@@ -54,7 +54,7 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun LockScreen(
-    onNextButtonClicked: () -> Unit
+    onNextButtonClicked: () -> Unit,
 ) {
     val pin = remember {
         mutableStateListOf<Int>(
@@ -139,7 +139,11 @@ fun LockScreen(
                 if (Biometric.status(LocalContext.current)) {
                     UseBiometric(onNextButtonClicked)
                 } else {
-                    Toast.makeText(LocalContext.current, Biometric.statusName(LocalContext.current), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        LocalContext.current,
+                        Biometric.statusName(LocalContext.current),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 useBio.value = false
@@ -186,7 +190,7 @@ fun NumberButton(
     modifier: Modifier = Modifier,
     number: String = "1",
     onClick: (number: String) -> Unit = {},
-    isImage: Boolean = false
+    isImage: Boolean = false,
 ) {
     if (isImage) {
         Box(
@@ -264,7 +268,6 @@ fun CheckUserAuth(pin: List<Int>, onLoginSuccess: () -> Unit) {
     }
 }
 
-//code 5  to define UseBioMetric
 @Composable
 fun UseBiometric(onLoginSuccess: () -> Unit) {
     val activity = LocalContext.current
