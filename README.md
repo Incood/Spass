@@ -11,7 +11,7 @@
 ## Скриншоты
 
 <p align="center">
-  <img src="./screens/add_screen.png" width="200" alt="Image 1">
+  <img src="./screens/auth_screen.png" width="200" alt="Image 1">
   <img src="./screens/main_screen.png" width="200" alt="Image 2">
-  <img src="./screens/auth_screen.png" width="200" alt="Image 3">
+  <img src="./screens/add_screen.png" width="200" alt="Image 3">
 </p>
